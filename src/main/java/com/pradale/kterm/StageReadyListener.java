@@ -18,7 +18,7 @@ import java.net.URL;
 
 @Slf4j
 @Component
-public class StageReadyListener implements ApplicationListener<KTermApplication.StageReadyEvent> {
+public class StageReadyListener implements ApplicationListener<StageReadyEvent> {
 
     private final String applicationTitle;
     private final Resource fxml;
@@ -33,7 +33,7 @@ public class StageReadyListener implements ApplicationListener<KTermApplication.
     }
 
     @Override
-    public void onApplicationEvent(KTermApplication.StageReadyEvent event) {
+    public void onApplicationEvent(StageReadyEvent event) {
         try {
             Stage stage = event.getStage();
             URL url = fxml.getURL();
