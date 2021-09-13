@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="394.0"
+            prefWidth="1016.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.pradale.kterm.controller.KTermController">
+    <top>
+        <MenuBar fx:id="ctrlMenuBar" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="New Command Line Request" onAction="#addCommandRequest"/>
+                        <MenuItem mnemonicParsing="false" text="New HTTP Request"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.16930693069306932" prefHeight="160.0" prefWidth="200.0"
+                   BorderPane.alignment="CENTER">
+            <items>
+                <AnchorPane fx:id="ctrlLeftPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <children>
+                                <ChoiceBox fx:id="ctrlComboEnvironments" maxWidth="1.7976931348623157E308"
+                                           prefHeight="27.0" prefWidth="190.0" VBox.vgrow="ALWAYS">
+                                    <VBox.margin>
+                                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                                    </VBox.margin>
+                                </ChoiceBox>
+
+                                <TreeTableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TreeTableColumn prefWidth="75.0" text="C1"/>
+                                        <TreeTableColumn prefWidth="75.0" text="C2"/>
+                                    </columns>
+                                    <VBox.margin>
+                                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                                    </VBox.margin>
+                                </TreeTableView>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+                <AnchorPane fx:id="ctrlRightAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0"
+                            prefWidth="100.0">
+                    <children>
+                        <TabPane fx:id="ctrlTabPanelParent" layoutX="53.0" layoutY="28.0" prefHeight="200.0"
+                                 prefWidth="200.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0"
+                                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                    </padding>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </center>
+    <padding>
+        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+    </padding>
+</BorderPane>

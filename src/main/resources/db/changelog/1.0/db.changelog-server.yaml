@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user
+      author: pradeep
+      changes:
+        - createTable:
+            tableName: server
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: server_id
+              - column:
+                  name: created_at
+                  type: datetime
+              - column:
+                  name: updated_at
+                  type: datetime
+              - column:
+                  name: host
+                  type: VARCHAR(50)
+              - column:
+                  name: alias
+                  type: VARCHAR(100)
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+              - column:
+                  name: password
+                  type: VARCHAR(50)
+

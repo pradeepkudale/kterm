@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="394.0" prefWidth="821.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pradale.kterm.controller.FTPController">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab fx:id="tabDefault" text="Untitled Tab 1">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox prefHeight="31.0" prefWidth="821.0">
+                                 <children>
+                                    <Label fx:id="lblHost" alignment="CENTER" text="Host">
+                                       <padding>
+                                          <Insets top="5.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="txtHost" prefHeight="27.0" prefWidth="222.0" promptText="Host Name">
+                                       <HBox.margin>
+                                          <Insets top="2.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Label fx:id="lblUserName" text="User Name">
+                                       <padding>
+                                          <Insets top="5.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="txtUserName" promptText="UserName">
+                                       <HBox.margin>
+                                          <Insets top="2.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Label text="Password">
+                                       <padding>
+                                          <Insets top="5.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField promptText="Password">
+                                       <HBox.margin>
+                                          <Insets top="2.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Label text="Port">
+                                       <padding>
+                                          <Insets top="5.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField prefHeight="27.0" prefWidth="66.0" promptText="Port">
+                                       <HBox.margin>
+                                          <Insets top="2.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <TextArea prefHeight="109.0" prefWidth="821.0" HBox.hgrow="ALWAYS" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                       <items>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox prefHeight="40.0" prefWidth="406.0">
+                                                         <children>
+                                                            <Label fx:id="lblHost1" alignment="CENTER" text="Path">
+                                                               <padding>
+                                                                  <Insets top="5.0" />
+                                                               </padding>
+                                                               <HBox.margin>
+                                                                  <Insets left="5.0" right="5.0" />
+                                                               </HBox.margin>
+                                                            </Label>
+                                                            <TextField fx:id="txtHost1" prefHeight="27.0" prefWidth="366.0" promptText="Host Name" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                         <children>
+                                                            <TreeTableView prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                                              <columns>
+                                                                <TreeTableColumn prefWidth="75.0" text="C1" />
+                                                                <TreeTableColumn prefWidth="75.0" text="C2" />
+                                                              </columns>
+                                                            </TreeTableView>
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox prefHeight="32.0" prefWidth="405.0">
+                                                         <children>
+                                                            <Label fx:id="lblHost11" alignment="CENTER" text="Path">
+                                                               <padding>
+                                                                  <Insets top="5.0" />
+                                                               </padding>
+                                                               <HBox.margin>
+                                                                  <Insets left="5.0" right="5.0" />
+                                                               </HBox.margin>
+                                                            </Label>
+                                                            <TextField fx:id="txtHost11" prefHeight="27.0" prefWidth="222.0" promptText="Host Name" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                         <children>
+                                                            <TreeTableView prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                                              <columns>
+                                                                <TreeTableColumn prefWidth="75.0" text="C1" />
+                                                                <TreeTableColumn prefWidth="75.0" text="C2" />
+                                                              </columns>
+                                                            </TreeTableView>
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </items>
+                                    </SplitPane>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="36.0" prefWidth="821.0" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+</BorderPane>

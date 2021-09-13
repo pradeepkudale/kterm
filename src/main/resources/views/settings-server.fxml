@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="394.0" prefWidth="821.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pradale.kterm.controller.KTermController">
+   <top>
+      <VBox prefHeight="38.0" prefWidth="821.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="13.0" prefWidth="821.0">
+               <children>
+                  <Label fx:id="ctrlLableRequest" text="Untitled Commandline Request">
+                     <HBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox prefHeight="25.0" prefWidth="821.0">
+               <children>
+                  <TextField fx:id="ctrlTxtCommand" prefHeight="27.0" prefWidth="690.0" promptText="Command to execute" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button fx:id="ctrlCommandBtnSend" mnemonicParsing="false" text="Send">
+                     <HBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="ctrlCommandBtnSave" mnemonicParsing="false" text="Save">
+                     <HBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <SplitPane dividerPositions="0.6735294117647059" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TabPane layoutX="-201.0" layoutY="-48.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <tabs>
+                      <Tab text="Parameters">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="116.0" prefWidth="821.0">
+                                 <children>
+                                    <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label text="Query Params">
+                                             <VBox.margin>
+                                                <Insets bottom="2.0" left="10.0" right="2.0" top="2.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                             <columns>
+                                                <TableColumn prefWidth="271.0" text="C1" />
+                                                <TableColumn minWidth="0.0" prefWidth="466.0" text="C2" />
+                                             </columns>
+                                             <VBox.margin>
+                                                <Insets left="2.0" right="2.0" />
+                                             </VBox.margin>
+                                          </TableView>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                      <Tab text="Authorization">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <SplitPane dividerPositions="0.3317013463892289" layoutX="199.0" layoutY="16.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false">
+                                             <children>
+                                                <VBox layoutX="70.0" layoutY="-5.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <Label text="Label">
+                                                         <VBox.margin>
+                                                            <Insets bottom="2.0" left="8.0" right="2.0" top="2.0" />
+                                                         </VBox.margin>
+                                                      </Label>
+                                                      <ComboBox prefHeight="27.0" prefWidth="248.0">
+                                                         <VBox.margin>
+                                                            <Insets bottom="2.0" left="8.0" right="2.0" top="2.0" />
+                                                         </VBox.margin>
+                                                      </ComboBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </center>
+</BorderPane>

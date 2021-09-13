@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: KTerm
+
+  level:
+    root: INFO
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDB103Dialect
+
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  datasource:
+    initialize: false
+    initialization-mode: never
+    url: jdbc:hsqldb:file:~/kterm/kterm
+    username: sa
+    password:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver

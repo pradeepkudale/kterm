@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.tableview2.TableView2?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="394.0" prefWidth="821.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <VBox prefHeight="38.0" prefWidth="821.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox prefHeight="13.0" prefWidth="821.0">
+                    <children>
+                        <Label fx:id="ctrlLableRequest" text="Commandline Request">
+                            <HBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="ctrlCmdCmbHostName" editable="true" prefHeight="27.0" prefWidth="444.0" promptText="Host Name">
+                     <HBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </HBox.margin>
+                  </ComboBox>
+                  <TextField fx:id="ctrlCmdTxtPort" prefHeight="27.0" prefWidth="65.0" promptText="Port">
+                     <HBox.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+                <HBox prefHeight="25.0" prefWidth="821.0">
+                    <children>
+                        <TextField fx:id="ctrlCmdTxtCommand" prefHeight="27.0" prefWidth="690.0" promptText="Command to execute" HBox.hgrow="ALWAYS">
+                            <HBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </HBox.margin>
+                        </TextField>
+                        <Button fx:id="ctrlCmdBtnRun" mnemonicParsing="false" prefHeight="27.0" prefWidth="75.0" text="Run">
+                            <HBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button fx:id="ctrlCmdBtnSave" mnemonicParsing="false" prefHeight="27.0" prefWidth="75.0" text="Save">
+                            <HBox.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.6735294117647059" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <TabPane fx:id="ctrlTabPanel" layoutX="-201.0" layoutY="-48.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <tabs>
+                                <Tab text="Parameters">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="116.0" prefWidth="821.0">
+                                            <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    <children>
+                                                        <Label text="Query Params">
+                                                            <VBox.margin>
+                                                                <Insets bottom="2.0" left="10.0" right="2.0" top="2.0" />
+                                                            </VBox.margin>
+                                                        </Label>
+                                                        <TableView2 fx:id="ctrlCmdTableQueryParam" editable="true" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                            <VBox.margin>
+                                                                <Insets left="2.0" right="2.0" />
+                                                            </VBox.margin>
+                                                        </TableView2>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </AnchorPane>
+                                    </content>
+                                </Tab>
+                                <Tab text="Authorization">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                            <children>
+                                                <SplitPane dividerPositions="0.35547355473554737" layoutX="199.0" layoutY="16.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    <items>
+                                                        <AnchorPane fx:id="ctrlCmdAuthLeftPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false">
+                                                            <children>
+                                                                <VBox layoutX="70.0" layoutY="-5.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                    <children>
+                                                                        <Label text="Label">
+                                                                            <VBox.margin>
+                                                                                <Insets bottom="2.0" left="8.0" right="2.0" top="2.0" />
+                                                                            </VBox.margin>
+                                                                        </Label>
+                                                                        <ComboBox fx:id="ctrlCmdCmbAuthOptions" prefHeight="27.0" prefWidth="248.0">
+                                                                            <VBox.margin>
+                                                                                <Insets bottom="2.0" left="8.0" right="2.0" top="2.0" />
+                                                                            </VBox.margin>
+                                                                        </ComboBox>
+                                                                          <CheckBox fx:id="ctrlCmdChkAuthDefault" mnemonicParsing="false" text="Default">
+                                                                             <VBox.margin>
+                                                                                <Insets bottom="2.0" left="8.0" right="2.0" top="4.0" />
+                                                                             </VBox.margin>
+                                                                          </CheckBox>
+                                                                    </children>
+                                                                </VBox>
+                                                            </children>
+                                                        </AnchorPane>
+                                                        <AnchorPane fx:id="ctrlCmdAuthRightPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                                                    </items>
+                                                </SplitPane>
+                                            </children>
+                                        </AnchorPane>
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <TextArea fx:id="ctrlCmdTxtOutput" editable="false" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </center>
+   <padding>
+      <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+   </padding>
+</BorderPane>
