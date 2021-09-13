@@ -57,7 +57,7 @@ public class SSHClientProcess {
         Host host = shellCommand.getHost();
         HostAuthentication authentication = shellCommand.getDefaultAuthentication();
         String username = authentication.getUserName();
-        String password = "Pradeep@1982";//getIdentity(authentication);
+        String password = getIdentity(authentication);
 
         ClientSession session = sshClient.connect(username, host.getName(), host.getPort()).verify().getSession();
         if (StringUtils.isNotBlank(password)) {
