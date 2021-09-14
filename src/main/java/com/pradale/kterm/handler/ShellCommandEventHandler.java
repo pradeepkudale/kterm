@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -125,9 +123,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                 es.execute(new Runnable() {
                     @Override
                     public void run() {
-                        BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(1);
                         KTermConsole output = new KTermConsole(txtOutput);
-
 
                         SSHClientProcess process = factory.getObject();
                         String cmd = "\n" + shellCommand.getHost().getName() + ":" + shellCommand.getHost().getPort() + ">" + shellCommand.getCommand().getValue() + "\n";

@@ -55,7 +55,6 @@ public class KTermController {
     private BorderPane ktermParentPane;
 
     private ContextMenu tabContextMenu;
-    private int counter;
 
     @FXML
     public void initialize() {
