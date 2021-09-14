@@ -1,5 +1,7 @@
 package com.pradale.kterm.service;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.eventbus.EventBus;
 import com.pradale.kterm.domain.Host;
 import com.pradale.kterm.domain.Request;
 import com.pradale.kterm.domain.auth.AuthenticationFactory;
@@ -7,13 +9,30 @@ import com.pradale.kterm.domain.auth.BasicAuthentication;
 import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
 import com.pradale.kterm.domain.command.ShellCommand;
+import com.pradale.kterm.events.AlertEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
 
 @Slf4j
 @Service
-public class ShellCommandServiceImpl implements ShellCommandService {
+public class ShellCommandServiceImpl extends AbstractRequestService implements ShellCommandService {
+
+    @Value("${kterm.history}")
+    private String history;
+
+    @Value("${kterm.requests}")
+    private String requests;
+
+    @Autowired
+    private EventBus eventBus;
+
+    @Autowired
+    private XmlMapper xmlMapper;
 
     @Override
     public void updateCommand(ShellCommand shellCommand, String value) {
@@ -65,6 +84,16 @@ public class ShellCommandServiceImpl implements ShellCommandService {
     public void updateDefaultAuthentication(ShellCommand shellCommand, Class<? extends HostAuthentication> authType) {
         HostAuthentication hAuth = getHostAuthentication(shellCommand, authType);
         shellCommand.setDefaultAuthentication(hAuth);
+    }
+
+    @Override
+    public void save(ShellCommand shellCommand) {
+        try {
+            save(requests + File.separator + shellCommand.getId(), shellCommand);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            eventBus.post(new AlertEvent("Shell Command", ex.getMessage()));
+        }
     }
 
     private HostAuthentication getHostAuthentication(ShellCommand shellCommand, Class<? extends HostAuthentication> authType) {

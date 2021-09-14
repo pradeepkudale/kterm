@@ -15,4 +15,6 @@ public interface ShellCommandService {
     public void updatePassword(ShellCommand shellCommand, Class<? extends HostAuthentication> authType, String value);
 
     void updateDefaultAuthentication(ShellCommand shellCommand, Class<? extends HostAuthentication> authType);
+
+    void save(ShellCommand shellCommand);
 }

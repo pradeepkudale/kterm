@@ -1,5 +1,10 @@
 package com.pradale.kterm.domain.command;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.pradale.kterm.domain.Host;
 import com.pradale.kterm.domain.Request;
 import com.pradale.kterm.domain.auth.HostAuthentication;
@@ -12,13 +17,24 @@ import java.util.Set;
 
 @Data
 @Builder
+@JacksonXmlRootElement(localName = "shellCommand")
 public class ShellCommand {
 
     private String id;
+    private String parent;
     private Host host;
     private Request command;
+
+    @JsonIgnore
     private String fetchProcessId = " & echo $!"; // To get the processId of executed command
+
+    @JacksonXmlElementWrapper(localName = "authentications")
+    @JacksonXmlProperty(localName = "authentication")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
     private Set<HostAuthentication> authentications;
+
+    @JacksonXmlElementWrapper(localName = "defaultAuthentication")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
     private HostAuthentication defaultAuthentication;
     private boolean isNew;
 

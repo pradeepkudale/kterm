@@ -4,16 +4,21 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.pradale.kterm.domain.command.ShellCommand;
 import com.pradale.kterm.events.AlertEvent;
+import com.pradale.kterm.events.NotificationEvent;
 import com.pradale.kterm.handler.ShellCommandEventHandler;
 import com.pradale.kterm.service.InitializeService;
 import com.pradale.kterm.service.SSHClientService;
+import com.pradale.kterm.utils.ApplicationUtils;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Duration;
 import lombok.SneakyThrows;
+import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -46,6 +51,9 @@ public class KTermController {
     @FXML
     private TabPane ctrlTabPanelParent;
 
+    @FXML
+    private BorderPane ktermParentPane;
+
     private ContextMenu tabContextMenu;
     private int counter;
 
@@ -65,7 +73,7 @@ public class KTermController {
         tab.setContextMenu(getTabContextMenu());
 
         if (shellCommand.isNew()) {
-            String id = "Command Request - " + counter++;
+            String id = ApplicationUtils.randomId("Shell");
             tab.setText(id);
             tab.setId(id);
             shellCommand.setId(id);
@@ -74,7 +82,7 @@ public class KTermController {
             tab.setId(shellCommand.getId());
         }
 
-        commandRequestEventHandler.initialize(tabPanel, shellCommand);
+        commandRequestEventHandler.initialize(tab, tabPanel, shellCommand);
         ctrlTabPanelParent.getTabs().add(tab);
     }
 
@@ -124,6 +132,23 @@ public class KTermController {
                 alert.setContentText(event.getMessage());
 
                 alert.showAndWait();
+            }
+        });
+    }
+
+    @Subscribe
+    public void showNotification(NotificationEvent event) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Notifications notificationBuilder = Notifications.create()
+                        .title(event.getHeader())
+                        .text(event.getMessage())
+                        .hideAfter(Duration.seconds(5))
+                        .position(Pos.TOP_RIGHT)
+                        .threshold(5, Notifications.create().title("Threshold Notification"));
+                notificationBuilder.owner(ktermParentPane);
+                notificationBuilder.show();
             }
         });
     }

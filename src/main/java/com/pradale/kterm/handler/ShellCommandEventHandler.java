@@ -12,6 +12,7 @@ import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
 import com.pradale.kterm.domain.command.ShellCommand;
 import com.pradale.kterm.events.AlertEvent;
+import com.pradale.kterm.events.NotificationEvent;
 import com.pradale.kterm.service.SSHClientService;
 import com.pradale.kterm.service.ShellCommandService;
 import com.pradale.kterm.service.ssh.SSHClientProcess;
@@ -35,6 +36,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.tableview2.TableColumn2;
 import org.controlsfx.control.tableview2.TableView2;
 import org.controlsfx.control.tableview2.cell.TextField2TableCell;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,19 +69,23 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
     @Autowired
     private EventBus eventBus;
 
-    public void initialize(BorderPane tabPanel, ShellCommand event) {
+    @Autowired
+    private ObjectFactory<SSHClientProcess> factory;
+
+    public void initialize(Tab tab, BorderPane tabPanel, ShellCommand event) {
         ArrayList<Node> nodes = ComponentUtils.getAllChildControls(tabPanel);
 
         populateParametersTab(nodes, event);
         populateAuthorizationTab(nodes, event);
-        addHandlers(nodes, event);
+        addHandlers(tab, nodes, event);
     }
 
-    private void addHandlers(ArrayList<Node> nodes, ShellCommand shellCommand) {
+    private void addHandlers(Tab tab, ArrayList<Node> nodes, ShellCommand shellCommand) {
         TextField txtCommand = getComponent(nodes, "ctrlCmdTxtCommand", TextField.class);
         TextField txtPort = getComponent(nodes, "ctrlCmdTxtPort", TextField.class);
         ComboBox<String> cmbHostName = getComponent(nodes, "ctrlCmdCmbHostName", ComboBox.class);
         Button btnRun = getComponent(nodes, "ctrlCmdBtnRun", Button.class);
+        Button btnSave = getComponent(nodes, "ctrlCmdBtnSave", Button.class);
         TextArea txtOutput = getComponent(nodes, "ctrlCmdTxtOutput", TextArea.class);
 
         txtCommand.focusedProperty().addListener((ov, oldV, newV) -> {
@@ -123,7 +129,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                         KTermConsole output = new KTermConsole(txtOutput);
 
 
-                        SSHClientProcess process = new SSHClientProcess();
+                        SSHClientProcess process = factory.getObject();
                         String cmd = "\n" + shellCommand.getHost().getName() + ":" + shellCommand.getHost().getPort() + ">" + shellCommand.getCommand().getValue() + "\n";
 
                         try {
@@ -133,11 +139,35 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                             log.error(ex.getMessage(), ex);
                             try {
                                 output.write(ex.getMessage().getBytes());
-                            } catch (IOException exc) {}
+                            } catch (IOException exc) {
+                            }
                         }
                     }
                 });
             }
+        });
+
+        btnSave.setOnAction(e -> {
+            TextInputDialog dlg = new TextInputDialog(shellCommand.getId());
+            dlg.setTitle("KTerminal - Save Shell Request");
+            dlg.getDialogPane().setContentText("Save Shell Request?");
+
+            dlg.show();
+            dlg.resultProperty().addListener(r -> {
+                if (StringUtils.isNotBlank(dlg.getResult())) {
+                    boolean isNewFile = shellCommand.isNew();
+                    try {
+                        shellCommand.setId(dlg.getResult());
+                        shellCommand.setNew(false);
+                        shellCommandService.save(shellCommand);
+                        tab.setText(dlg.getResult());
+                    } catch (Exception ex) {
+                        shellCommand.setNew(isNewFile); // In case save fails. revert the state
+                        log.error(ex.getMessage(), ex);
+                        eventBus.post(new NotificationEvent("Save Shell Request", ex.getMessage()));
+                    }
+                }
+            });
         });
     }
 
@@ -249,9 +279,9 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         chkAuthDefault.setOnAction(e -> {
             AuthOption authOption = cmbAuthOptions.getSelectionModel().getSelectedItem();
 
-            if(authOption.getAuthType() == AuthTypes.NO_AUTH) {
+            if (authOption.getAuthType() == AuthTypes.NO_AUTH) {
                 shellCommandService.updateDefaultAuthentication(shellCommand, NoAuthentication.class);
-            }else if(authOption.getAuthType() == AuthTypes.BASIC) {
+            } else if (authOption.getAuthType() == AuthTypes.BASIC) {
                 shellCommandService.updateDefaultAuthentication(shellCommand, BasicAuthentication.class);
             }
         });
