@@ -5,17 +5,18 @@ import com.pradale.kterm.auth.AuthTypes;
 import com.pradale.kterm.auth.Authenticator;
 import com.pradale.kterm.control.Property;
 import com.pradale.kterm.domain.AuthOption;
+import com.pradale.kterm.domain.Command;
 import com.pradale.kterm.domain.Host;
-import com.pradale.kterm.domain.Request;
 import com.pradale.kterm.domain.auth.BasicAuthentication;
 import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
-import com.pradale.kterm.domain.command.ShellCommand;
+import com.pradale.kterm.domain.type.ShellCommand;
 import com.pradale.kterm.events.AlertEvent;
 import com.pradale.kterm.events.NotificationEvent;
 import com.pradale.kterm.service.SSHClientService;
 import com.pradale.kterm.service.ShellCommandService;
 import com.pradale.kterm.service.ssh.SSHClientProcess;
+import com.pradale.kterm.utils.ApplicationUtils;
 import com.pradale.kterm.utils.ComponentUtils;
 import com.pradale.kterm.utils.KTermConsole;
 import javafx.beans.value.ChangeListener;
@@ -73,49 +74,59 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
     public void initialize(Tab tab, BorderPane tabPanel, ShellCommand event) {
         ArrayList<Node> nodes = ComponentUtils.getAllChildControls(tabPanel);
 
-        populateParametersTab(nodes, event);
-        populateAuthorizationTab(nodes, event);
-        addHandlers(tab, nodes, event);
+        addTabHandlers(tab, nodes, event);
+        addParametersTabHandlers(nodes, event);
+        addAuthorizationTabHandlers(nodes, event);
     }
 
-    private void addHandlers(Tab tab, ArrayList<Node> nodes, ShellCommand shellCommand) {
-        TextField txtCommand = getComponent(nodes, "ctrlCmdTxtCommand", TextField.class);
-        TextField txtPort = getComponent(nodes, "ctrlCmdTxtPort", TextField.class);
-        ComboBox<String> cmbHostName = getComponent(nodes, "ctrlCmdCmbHostName", ComboBox.class);
-        Button btnRun = getComponent(nodes, "ctrlCmdBtnRun", Button.class);
-        Button btnSave = getComponent(nodes, "ctrlCmdBtnSave", Button.class);
-        TextArea txtOutput = getComponent(nodes, "ctrlCmdTxtOutput", TextArea.class);
+    private void addTabHandlers(Tab tab, ArrayList<Node> nodes, ShellCommand shellCommand) {
 
-        txtCommand.focusedProperty().addListener((ov, oldV, newV) -> {
-            if (!newV) {
-                shellCommandService.updateCommand(shellCommand, txtCommand.getText());
+        // Host name combo
+        ComboBox<String> hostname = getComponent(nodes, "ctrlCmdCmbHostName", ComboBox.class);
+        if (StringUtils.isNotBlank(shellCommand.getHost().getName())) {
+            hostname.setValue(shellCommand.getHost().getName());
+        }
+        hostname.setOnAction(event -> {
+            shellCommandService.updateHostName(shellCommand, hostname.getValue());
+        });
+
+        // Port number Text box
+        TextField portNumber = getComponent(nodes, "ctrlCmdTxtPort", TextField.class);
+        if (shellCommand.getHost().getPort() != 0) {
+            portNumber.setText(String.valueOf(shellCommand.getHost().getPort()));
+        }
+        portNumber.focusedProperty().addListener((ov, oldV, newV) -> {
+            if (!newV && StringUtils.isNotBlank(portNumber.getText())) {
+                shellCommandService.updateHostPort(shellCommand, NumberUtils.createInteger(portNumber.getText()));
             }
         });
-
-        cmbHostName.setOnAction(event -> {
-            shellCommandService.updateHostName(shellCommand, cmbHostName.getValue());
-        });
-
-        txtPort.focusedProperty().addListener((ov, oldV, newV) -> {
-            if (!newV && StringUtils.isNotBlank(txtPort.getText())) {
-                shellCommandService.updateHostPort(shellCommand, NumberUtils.createInteger(txtPort.getText()));
-            }
-        });
-
-        txtPort.textProperty().addListener(new ChangeListener<String>() {
+        portNumber.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (newValue.length() > 5) {
-                    txtPort.setText(oldValue);
+                    portNumber.setText(oldValue);
                 }
 
                 if (!newValue.matches("\\d*")) {
-                    txtPort.setText(newValue.replaceAll("[^\\d]", ""));
+                    portNumber.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             }
         });
 
-        btnRun.setOnAction(e -> {
+        // Command Text Box
+        TextField command = getComponent(nodes, "ctrlCmdTxtCommand", TextField.class);
+        if (StringUtils.isNotBlank(shellCommand.getCommand().getValue())) {
+            command.setText(shellCommand.getCommand().getValue());
+        }
+        command.focusedProperty().addListener((ov, oldV, newV) -> {
+            if (!newV) {
+                shellCommandService.updateCommand(shellCommand, command.getText());
+            }
+        });
+
+        Button run = getComponent(nodes, "ctrlCmdBtnRun", Button.class);
+        TextArea txtOutput = getComponent(nodes, "ctrlCmdTxtOutput", TextArea.class);
+        run.setOnAction(e -> {
             if (validateShellCommand(shellCommand)) {
 
                 ExecutorService es = Executors.newCachedThreadPool();
@@ -143,7 +154,8 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
             }
         });
 
-        btnSave.setOnAction(e -> {
+        Button save = getComponent(nodes, "ctrlCmdBtnSave", Button.class);
+        save.setOnAction(e -> {
             TextInputDialog dlg = new TextInputDialog(shellCommand.getId());
             dlg.setTitle("KTerminal - Save Shell Request");
             dlg.getDialogPane().setContentText("Save Shell Request?");
@@ -153,12 +165,21 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                 if (StringUtils.isNotBlank(dlg.getResult())) {
                     boolean isNewFile = shellCommand.isNew();
                     try {
-                        shellCommand.setId(dlg.getResult());
+                        String fileName = dlg.getResult();
+
+                        if (!ApplicationUtils.validateFileName(fileName)) {
+                            throw new IllegalArgumentException("Invalid file name : " + fileName);
+                        }
+
+                        shellCommand.setName(fileName);
                         shellCommand.setNew(false);
                         shellCommandService.save(shellCommand);
                         tab.setText(dlg.getResult());
+
+                        eventBus.post(new NotificationEvent("Save Shell Request", "Shell command request saved successfully"));
                     } catch (Exception ex) {
                         shellCommand.setNew(isNewFile); // In case save fails. revert the state
+                        shellCommand.setName(shellCommand.getId());
                         log.error(ex.getMessage(), ex);
                         eventBus.post(new NotificationEvent("Save Shell Request", ex.getMessage()));
                     }
@@ -167,7 +188,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         });
     }
 
-    private void populateParametersTab(ArrayList<Node> nodes, ShellCommand event) {
+    private void addParametersTabHandlers(ArrayList<Node> nodes, ShellCommand event) {
         TableView2<Property> queryTableView = getComponent(nodes, "ctrlCmdTableQueryParam", TableView2.class);
         queryTableView.rowHeaderVisibleProperty().set(true);
 
@@ -243,7 +264,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         });
     }
 
-    private void populateAuthorizationTab(ArrayList<Node> nodes, ShellCommand shellCommand) {
+    private void addAuthorizationTabHandlers(ArrayList<Node> nodes, ShellCommand shellCommand) {
         CheckBox chkAuthDefault = getComponent(nodes, "ctrlCmdChkAuthDefault", CheckBox.class);
         AnchorPane authLeftPane = getComponent(nodes, "ctrlCmdAuthLeftPane", AnchorPane.class);
         AnchorPane authRightPane = getComponent(nodes, "ctrlCmdAuthRightPane", AnchorPane.class);
@@ -304,7 +325,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
     private boolean validateShellCommand(ShellCommand shellCommand) {
         Host host = shellCommand.getHost();
         HostAuthentication authentication = shellCommand.getDefaultAuthentication();
-        Request command = shellCommand.getCommand();
+        Command command = shellCommand.getCommand();
         String username = authentication.getUserName();
         List<String> messages = new ArrayList<>(5);
 

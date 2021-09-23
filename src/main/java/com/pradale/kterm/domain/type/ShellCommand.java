@@ -1,41 +1,41 @@
-package com.pradale.kterm.domain.command;
+package com.pradale.kterm.domain.type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.pradale.kterm.domain.Command;
 import com.pradale.kterm.domain.Host;
-import com.pradale.kterm.domain.Request;
 import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder
+@SuperBuilder
+@Jacksonized
 @JacksonXmlRootElement(localName = "shellCommand")
-public class ShellCommand {
+public class ShellCommand extends TextItem implements Terminal {
 
     private String id;
-    private String parent;
     private Host host;
-    private Request command;
-
+    private Command command;
     @JsonIgnore
     private String fetchProcessId = " & echo $!"; // To get the processId of executed command
-
     @JacksonXmlElementWrapper(localName = "authentications")
     @JacksonXmlProperty(localName = "authentication")
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
     private Set<HostAuthentication> authentications;
-
     @JacksonXmlElementWrapper(localName = "defaultAuthentication")
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
     private HostAuthentication defaultAuthentication;
+    @JsonProperty(value = "isNew")
     private boolean isNew;
 
     public static ShellCommand getDefault(boolean isNew) {
@@ -43,10 +43,12 @@ public class ShellCommand {
         NoAuthentication defaultAuth = NoAuthentication.getDefault();
 
         ShellCommand dCommand = ShellCommand.builder()
-                .command(Request.getDefault())
+                .host(Host.builder().build())
+                .command(Command.getDefault())
                 .authentications(auths)
                 .isNew(isNew)
                 .build();
+
         auths.add(defaultAuth);
         dCommand.setDefaultAuthentication(defaultAuth);
 
@@ -60,9 +62,9 @@ public class ShellCommand {
         return host;
     }
 
-    public Request getCommand() {
+    public Command getCommand() {
         if (command == null) {
-            command = Request.builder().build();
+            command = Command.builder().build();
         }
         return command;
     }
@@ -72,5 +74,10 @@ public class ShellCommand {
                 .filter(a -> a.getClass().equals(classz))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public ItemType getType() {
+        return ItemType.SHELL_COMMAND;
     }
 }

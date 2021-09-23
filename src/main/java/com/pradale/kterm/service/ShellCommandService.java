@@ -1,7 +1,7 @@
 package com.pradale.kterm.service;
 
 import com.pradale.kterm.domain.auth.HostAuthentication;
-import com.pradale.kterm.domain.command.ShellCommand;
+import com.pradale.kterm.domain.type.ShellCommand;
 
 public interface ShellCommandService {
     public void updateCommand(ShellCommand shellCommand, String value);

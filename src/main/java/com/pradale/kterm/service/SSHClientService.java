@@ -1,6 +1,6 @@
 package com.pradale.kterm.service;
 
-import com.pradale.kterm.domain.command.ShellCommand;
+import com.pradale.kterm.domain.type.ShellCommand;
 
 import java.io.OutputStream;
 

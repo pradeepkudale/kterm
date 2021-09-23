@@ -3,3 +3,8 @@
     -fx-padding: 0 0 0 100;
 }
 */
+
+.root{
+    -fx-font-size: 11pt;
+    -fx-font-family: "Tahoma";
+}

@@ -1,12 +1,10 @@
 package com.pradale.kterm.utils;
 
+import com.pradale.kterm.domain.type.Item;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import lombok.SneakyThrows;
 import org.springframework.core.io.Resource;
@@ -21,6 +19,19 @@ public class ComponentUtils {
         ArrayList<Node> nodes = new ArrayList<>();
         getAllChildControls(root, nodes);
         return nodes;
+    }
+
+    public static TreeItem<Item> getTreeViewItem(TreeItem<Item> treeItem, String value) {
+        if (treeItem != null && treeItem.getValue().getId().equals(value))
+            return treeItem;
+
+        for (TreeItem<Item> item : treeItem.getChildren()) {
+            TreeItem sItem = getTreeViewItem(item, value);
+            if (sItem != null)
+                return sItem;
+
+        }
+        return null;
     }
 
     @SneakyThrows
@@ -62,4 +73,6 @@ public class ComponentUtils {
             }
         }
     }
+
+
 }

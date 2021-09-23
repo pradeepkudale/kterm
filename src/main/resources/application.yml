@@ -23,6 +23,6 @@ spring:
     password:
     driver-class-name: org.hsqldb.jdbc.JDBCDriver
 
-kterm.home: ${user.home}/kterm
-kterm.history: ${user.home}/kterm/history
-kterm.requests: ${user.home}/kterm/requests
+kterm.path.home: ${user.home}/kterm
+kterm.path.history: ${user.home}/kterm/history
+kterm.path.requests: ${user.home}/kterm/requests

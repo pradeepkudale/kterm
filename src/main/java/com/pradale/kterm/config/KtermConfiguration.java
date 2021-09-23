@@ -1,6 +1,8 @@
 package com.pradale.kterm.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -16,14 +18,14 @@ import java.util.concurrent.Executors;
 @Configuration
 public class KtermConfiguration implements InitializingBean {
 
-    @Value("${kterm.home}")
-    private String home;
+    @Value("${kterm.path.home}")
+    private String homeDirectory;
 
-    @Value("${kterm.history}")
-    private String history;
+    @Value("${kterm.path.history}")
+    private String historyDirectory;
 
-    @Value("${kterm.requests}")
-    private String requests;
+    @Value("${kterm.path.requests}")
+    private String requestDirectory;
 
     @Bean
     public EventBus eventBus() {
@@ -39,25 +41,28 @@ public class KtermConfiguration implements InitializingBean {
 
     @Bean
     public XmlMapper xmlMapper() {
-        XmlMapper xmlMapper = new XmlMapper();
+        JacksonXmlModule jacksonXmlModule = new JacksonXmlModule();
+        XmlMapper xmlMapper = new XmlMapper(jacksonXmlModule);
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         return xmlMapper;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        File dir = new File(home);
-        if (!dir.exists()){
+        File dir = new File(homeDirectory);
+        if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        dir = new File(history);
-        if (!dir.exists()){
+        dir = new File(historyDirectory);
+        if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        dir = new File(requests);
-        if (!dir.exists()){
+        dir = new File(requestDirectory);
+        if (!dir.exists()) {
             dir.mkdirs();
         }
     }

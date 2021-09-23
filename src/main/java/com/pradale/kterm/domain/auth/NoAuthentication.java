@@ -3,9 +3,11 @@ package com.pradale.kterm.domain.auth;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder
+@Jacksonized
 @JsonTypeName("NoAuthentication")
 public class NoAuthentication implements HostAuthentication, HTTPAuthentication {
 

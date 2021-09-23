@@ -24,5 +24,10 @@
 - [ ] Add support to add additional parameter while re-running.
 - [ ] Add support to run the program with jmx enable
 
+## Cucumber Support. like cucumber studio [low]
+- [ ] Add support to run cucumber files from kterm.
+- [ ] Import files from folder
+- [ ] Run specific file with required parameters
+
 ## DONE
 - [x] Add gitignore file

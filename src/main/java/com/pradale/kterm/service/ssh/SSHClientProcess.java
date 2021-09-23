@@ -4,7 +4,7 @@ import com.pradale.kterm.domain.Host;
 import com.pradale.kterm.domain.auth.BasicAuthentication;
 import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
-import com.pradale.kterm.domain.command.ShellCommand;
+import com.pradale.kterm.domain.type.ShellCommand;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
