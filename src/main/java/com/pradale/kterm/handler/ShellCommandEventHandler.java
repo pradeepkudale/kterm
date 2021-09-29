@@ -7,6 +7,7 @@ import com.pradale.kterm.control.Property;
 import com.pradale.kterm.domain.AuthOption;
 import com.pradale.kterm.domain.Command;
 import com.pradale.kterm.domain.Host;
+import com.pradale.kterm.domain.Parameter;
 import com.pradale.kterm.domain.auth.BasicAuthentication;
 import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -77,6 +79,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         addTabHandlers(tab, nodes, event);
         addParametersTabHandlers(nodes, event);
         addAuthorizationTabHandlers(nodes, event);
+        setDefaultAuthHandlers(nodes, event);
     }
 
     private void addTabHandlers(Tab tab, ArrayList<Node> nodes, ShellCommand shellCommand) {
@@ -129,9 +132,8 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         run.setOnAction(e -> {
             if (validateShellCommand(shellCommand)) {
 
-                ExecutorService es = Executors.newCachedThreadPool();
-
-                es.execute(new Runnable() {
+                ExecutorService service = Executors.newCachedThreadPool();
+                service.execute(new Runnable() {
                     @Override
                     public void run() {
                         KTermConsole output = new KTermConsole(txtOutput);
@@ -154,45 +156,57 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
             }
         });
 
+        TableView2<Property> queryTableView = getComponent(nodes, "ctrlCmdTableQueryParam", TableView2.class);
         Button save = getComponent(nodes, "ctrlCmdBtnSave", Button.class);
         save.setOnAction(e -> {
-            TextInputDialog dlg = new TextInputDialog(shellCommand.getId());
-            dlg.setTitle("KTerminal - Save Shell Request");
-            dlg.getDialogPane().setContentText("Save Shell Request?");
 
-            dlg.show();
-            dlg.resultProperty().addListener(r -> {
-                if (StringUtils.isNotBlank(dlg.getResult())) {
-                    boolean isNewFile = shellCommand.isNew();
-                    try {
-                        String fileName = dlg.getResult();
+            Command cmd = shellCommand.getCommand();
+            cmd.setParameters(getParameters(queryTableView));
 
-                        if (!ApplicationUtils.validateFileName(fileName)) {
-                            throw new IllegalArgumentException("Invalid file name : " + fileName);
+            if (StringUtils.isNotBlank(shellCommand.getFilePath())) {
+                shellCommandService.save(shellCommand);
+            } else {
+                TextInputDialog dlg = new TextInputDialog(shellCommand.getId());
+                dlg.setTitle("KTerminal - Save Shell Request");
+                dlg.getDialogPane().setContentText("Save Shell Request?");
+
+                dlg.show();
+                dlg.resultProperty().addListener(r -> {
+                    if (StringUtils.isNotBlank(dlg.getResult())) {
+                        boolean isNewFile = shellCommand.isNew();
+                        try {
+                            String fileName = dlg.getResult();
+
+                            if (!ApplicationUtils.validateFileName(fileName)) {
+                                throw new IllegalArgumentException("Invalid file name : " + fileName);
+                            }
+
+                            shellCommand.setName(fileName);
+                            shellCommand.setNew(false);
+                            shellCommandService.save(shellCommand);
+                            tab.setText(dlg.getResult());
+
+                            eventBus.post(new NotificationEvent("Save Shell Request", "Shell command request saved successfully"));
+                        } catch (Exception ex) {
+                            shellCommand.setNew(isNewFile); // In case save fails. revert the state
+                            shellCommand.setName(shellCommand.getId());
+                            log.error(ex.getMessage(), ex);
+                            eventBus.post(new NotificationEvent("Save Shell Request", ex.getMessage()));
                         }
-
-                        shellCommand.setName(fileName);
-                        shellCommand.setNew(false);
-                        shellCommandService.save(shellCommand);
-                        tab.setText(dlg.getResult());
-
-                        eventBus.post(new NotificationEvent("Save Shell Request", "Shell command request saved successfully"));
-                    } catch (Exception ex) {
-                        shellCommand.setNew(isNewFile); // In case save fails. revert the state
-                        shellCommand.setName(shellCommand.getId());
-                        log.error(ex.getMessage(), ex);
-                        eventBus.post(new NotificationEvent("Save Shell Request", ex.getMessage()));
                     }
-                }
-            });
+                });
+            }
         });
     }
 
-    private void addParametersTabHandlers(ArrayList<Node> nodes, ShellCommand event) {
+    private void addParametersTabHandlers(ArrayList<Node> nodes, ShellCommand command) {
         TableView2<Property> queryTableView = getComponent(nodes, "ctrlCmdTableQueryParam", TableView2.class);
         queryTableView.rowHeaderVisibleProperty().set(true);
 
-        ObservableList<Property> data = FXCollections.observableArrayList(new Property("", "", ""));
+        Property initProperty = new Property("", "", "");
+        List<Property> properties = command.getCommand().getParameters().stream().map(p -> Property.fromParameter(p)).collect(Collectors.toList());
+        ObservableList<Property> data = FXCollections.observableArrayList(properties);
+        command.getCommand().getParameters().add(initProperty.getParameter());
 
         TableColumn2<Property, String> key = new TableColumn2<>("Key");
         TableColumn2<Property, String> value = new TableColumn2<>("Value");
@@ -218,6 +232,7 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                 Property property = queryTableView.getSelectionModel().getSelectedItem();
                 if (property != null) {
                     items.remove(property);
+                    command.getCommand().getParameters().remove(property.getParameter());
                     addNewRow(data);// adds a new row if the removed row was the last one
                 }
             }
@@ -242,7 +257,8 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                 menuItem.setOnAction(e -> {
                     if (index >= 0) {
                         ObservableList<Property> items = queryTableView.getItems();
-                        data.remove(index.intValue());
+                        Property rProperty = data.remove(index.intValue());
+                        command.getCommand().getParameters().remove(rProperty.getParameter());
                         addNewRow(data); // adds a new row if the removed row was the last one
                     }
                 });
@@ -266,7 +282,6 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
 
     private void addAuthorizationTabHandlers(ArrayList<Node> nodes, ShellCommand shellCommand) {
         CheckBox chkAuthDefault = getComponent(nodes, "ctrlCmdChkAuthDefault", CheckBox.class);
-        AnchorPane authLeftPane = getComponent(nodes, "ctrlCmdAuthLeftPane", AnchorPane.class);
         AnchorPane authRightPane = getComponent(nodes, "ctrlCmdAuthRightPane", AnchorPane.class);
 
         ComboBox<AuthOption> cmbAuthOptions = getComponent(nodes, "ctrlCmdCmbAuthOptions", ComboBox.class);
@@ -275,21 +290,15 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         }
 
         cmbAuthOptions.setOnAction(e -> {
+            chkAuthDefault.setSelected(false);
+
             AuthOption selectedItem = cmbAuthOptions.getSelectionModel().getSelectedItem();
+            HostAuthentication defaultAuth = shellCommand.getDefaultAuthentication();
 
             if (selectedItem.getAuthType() == AuthTypes.NO_AUTH) {
-                authRightPane.getChildren().clear();
-                return;
-            } else {
-                Authenticator authenticator = hostAuthenticators.get(selectedItem.getAuthType());
-                Pane pane = ComponentUtils.loadFXML(authenticator.getResource());
-                pane.setMaxHeight(Double.MAX_VALUE);
-                pane.setMaxWidth(Double.MAX_VALUE);
-                authRightPane.getChildren().add(pane);
-
-                if (authenticator.getAuthType() == AuthTypes.BASIC) {
-                    addBasicAuthHandlers(pane, shellCommand);
-                }
+                addNoAuthControls(chkAuthDefault, authRightPane, defaultAuth);
+            } else if (selectedItem.getAuthType() == AuthTypes.BASIC) {
+                addBasicAuthControls(shellCommand, chkAuthDefault, authRightPane, selectedItem, defaultAuth);
             }
         });
 
@@ -304,17 +313,66 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         });
     }
 
+    private void addNoAuthControls(CheckBox chkAuthDefault, AnchorPane authRightPane, HostAuthentication defaultAuth) {
+        authRightPane.getChildren().clear();
+
+        if (defaultAuth instanceof NoAuthentication) {
+            chkAuthDefault.setSelected(true);
+        }
+    }
+
+    private void addBasicAuthControls(ShellCommand shellCommand, CheckBox chkAuthDefault, AnchorPane authRightPane, AuthOption selectedItem, HostAuthentication defaultAuth) {
+        authRightPane.getChildren().clear();
+
+        Authenticator authenticator = hostAuthenticators.get(selectedItem.getAuthType());
+        Pane pane = ComponentUtils.loadFXML(authenticator.getResource());
+        pane.setMaxHeight(Double.MAX_VALUE);
+        pane.setMaxWidth(Double.MAX_VALUE);
+        authRightPane.getChildren().add(pane);
+
+        addBasicAuthHandlers(pane, shellCommand);
+
+        if (defaultAuth instanceof BasicAuthentication) {
+            chkAuthDefault.setSelected(true);
+        }
+    }
+
+    private void setDefaultAuthHandlers(ArrayList<Node> nodes, ShellCommand shellCommand) {
+        CheckBox chkAuthDefault = getComponent(nodes, "ctrlCmdChkAuthDefault", CheckBox.class);
+        AnchorPane authRightPane = getComponent(nodes, "ctrlCmdAuthRightPane", AnchorPane.class);
+        ComboBox<AuthOption> cmbAuthOptions = getComponent(nodes, "ctrlCmdCmbAuthOptions", ComboBox.class);
+
+        HostAuthentication defaultAuth = shellCommand.getDefaultAuthentication();
+
+        if (defaultAuth instanceof NoAuthentication) {
+            Authenticator auth = hostAuthenticators.get(AuthTypes.NO_AUTH);
+            cmbAuthOptions.setValue(new AuthOption(auth.getLabel(), auth.getAuthType()));
+
+            addNoAuthControls(chkAuthDefault, authRightPane, defaultAuth);
+        } else if (defaultAuth instanceof BasicAuthentication) {
+            Authenticator auth = hostAuthenticators.get(AuthTypes.BASIC);
+            AuthOption selectedItem = new AuthOption(auth.getLabel(), auth.getAuthType());
+            cmbAuthOptions.setValue(selectedItem);
+            addBasicAuthControls(shellCommand, chkAuthDefault, authRightPane, selectedItem, defaultAuth);
+        }
+    }
+
+
     public void addBasicAuthHandlers(Pane pane, ShellCommand shellCommand) {
         ArrayList<Node> nodes = ComponentUtils.getAllChildControls(pane);
         TextField txtUserName = getComponent(nodes, "txtBasicAuthUserName", TextField.class);
         TextField txtPassword = getComponent(nodes, "txtBasicAuthPassword", TextField.class);
 
+        BasicAuthentication authentication = shellCommand.getHostAuthentication(BasicAuthentication.class);
+
+        txtUserName.setText(authentication != null ? authentication.getUserName() : "");
         txtUserName.focusedProperty().addListener((ov, oldV, newV) -> {
             if (!newV) {
                 shellCommandService.updateUserName(shellCommand, BasicAuthentication.class, txtUserName.getText());
             }
         });
 
+        txtPassword.setText(authentication != null ? authentication.getPassword() : "");
         txtPassword.focusedProperty().addListener((ov, oldV, newV) -> {
             if (!newV) {
                 shellCommandService.updatePassword(shellCommand, BasicAuthentication.class, txtPassword.getText());
@@ -367,5 +425,13 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
 
     private <T> T getComponent(List<Node> nodes, String id, Class<T> classz) {
         return (T) nodes.stream().filter(node -> id.equals(node.getId())).findFirst().orElse(null);
+    }
+
+    private List<Parameter> getParameters(TableView2<Property> queryTableView) {
+        return queryTableView
+                .getItems()
+                .stream()
+                .map(p -> p.getParameter())
+                .collect(Collectors.toList());
     }
 }

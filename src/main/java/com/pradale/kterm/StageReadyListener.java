@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ public class StageReadyListener implements ApplicationListener<StageReadyEvent> 
     private final String applicationTitle;
     private final Resource fxml;
     private final ApplicationContext applicationContext;
+    @Value("classpath:/images/terminal.png")
+    Resource image;
 
     public StageReadyListener(@Value("${spring.application.name}") String applicationTitle,
                               @Value("classpath:/views/kterm-parent.fxml") Resource fxml,
@@ -43,6 +46,8 @@ public class StageReadyListener implements ApplicationListener<StageReadyEvent> 
             Scene scene = new Scene(root, 1100, 600);
             stage.setScene(scene);
             stage.setTitle(this.applicationTitle);
+            stage.getIcons().add(new Image(image.getInputStream()));
+
             scene.getStylesheets().add("kterm.css");
             stage.show();
 

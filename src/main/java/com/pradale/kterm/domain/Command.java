@@ -2,9 +2,9 @@ package com.pradale.kterm.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,8 +13,8 @@ import java.util.List;
 public class Command {
     private String value;
 
-    @Singular
-    private List<Parameter<?>> parameters;
+    @Builder.Default
+    private List<Parameter> parameters = new ArrayList<>();
 
     public static Command getDefault() {
         return Command.builder().build();

@@ -10,6 +10,7 @@ import com.pradale.kterm.domain.auth.HostAuthentication;
 import com.pradale.kterm.domain.auth.NoAuthentication;
 import com.pradale.kterm.domain.type.ShellCommand;
 import com.pradale.kterm.events.AlertEvent;
+import com.pradale.kterm.events.LoadShellCommandEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +91,12 @@ public class ShellCommandServiceImpl extends AbstractService implements ShellCom
     public void save(ShellCommand shellCommand) {
         try {
             String filePath = requestDirectory + File.separator + shellCommand.getId() + ".xml";
+            if(StringUtils.isNotBlank(shellCommand.getFilePath())) {
+                filePath = shellCommand.getFilePath();
+            }
             shellCommand.setFilePath(filePath);
             save(filePath, shellCommand);
+            eventBus.post(LoadShellCommandEvent.builder().shellCommand(shellCommand).build());
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             eventBus.post(new AlertEvent("Shell Command", ex.getMessage()));

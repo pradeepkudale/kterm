@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.*?>
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="262.0" minWidth="487.0" prefHeight="262.0" prefWidth="487.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
@@ -16,7 +17,7 @@
                         </HBox.margin>
                     </Label>
 
-                    <TextField fx:id="txtBasicAuthUserName" prefHeight="27.0" prefWidth="247.0">
+                    <TextField fx:id="txtBasicAuthUserName" prefHeight="27.0" prefWidth="247.0" promptText="User Name">
                         <HBox.margin>
                             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                         </HBox.margin>
@@ -30,11 +31,11 @@
                             <Insets bottom="2.0" left="20.0" right="28.0" top="4.0" />
                         </HBox.margin>
                     </Label>
-                    <TextField fx:id="txtBasicAuthPassword" prefHeight="27.0" prefWidth="247.0">
+                    <PasswordField fx:id="txtBasicAuthPassword" prefHeight="27.0" prefWidth="247.0" promptText="Password">
                         <HBox.margin>
                             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                         </HBox.margin>
-                    </TextField>
+                    </PasswordField>
                 </children>
             </HBox>
             </children>

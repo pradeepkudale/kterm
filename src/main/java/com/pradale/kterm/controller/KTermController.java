@@ -36,6 +36,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 
 import java.net.URL;
+import java.util.Optional;
 
 @Controller
 public class KTermController {
@@ -123,7 +124,14 @@ public class KTermController {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                loadCommandTab(event.getShellCommand());
+                ShellCommand command = event.getShellCommand();
+                ObservableList<Tab> tabs = ctrlTabPanelParent.getTabs();
+
+                Optional<Tab> tab = tabs.stream().filter(tb -> tb.getId().equalsIgnoreCase(command.getId())).findFirst();
+
+                if (!tab.isPresent()) {
+                    loadCommandTab(command);
+                }
             }
         });
     }
