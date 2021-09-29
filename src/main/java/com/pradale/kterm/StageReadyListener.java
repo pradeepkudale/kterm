@@ -1,5 +1,6 @@
 package com.pradale.kterm;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,7 +48,12 @@ public class StageReadyListener implements ApplicationListener<StageReadyEvent> 
             stage.setScene(scene);
             stage.setTitle(this.applicationTitle);
             stage.getIcons().add(new Image(image.getInputStream()));
+            stage.setOnCloseRequest((ae) -> {
+                Platform.exit();
 
+                //TODO: Try to remove this. Application keeps running even after the main window is closed.
+                System.exit(0);
+            });
             scene.getStylesheets().add("kterm.css");
             stage.show();
 

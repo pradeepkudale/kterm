@@ -30,6 +30,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -47,7 +48,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,6 +68,9 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
 
     @Autowired
     private ObjectFactory<SSHClientProcess> factory;
+
+    @Autowired
+    private ExecutorService service;
 
     public void initialize(Tab tab, BorderPane tabPanel, ShellCommand event) {
         ArrayList<Node> nodes = ComponentUtils.getAllChildControls(tabPanel);
@@ -127,9 +130,8 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
         TextArea txtOutput = getComponent(nodes, "ctrlCmdTxtOutput", TextArea.class);
         run.setOnAction(e -> {
             if (validateShellCommand(shellCommand)) {
-
-                ExecutorService service = Executors.newCachedThreadPool();
                 service.execute(new Runnable() {
+                    @SneakyThrows
                     @Override
                     public void run() {
                         KTermConsole output = new KTermConsole(txtOutput);
@@ -142,10 +144,9 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
                             process.execute(shellCommand, output);
                         } catch (IOException ex) {
                             log.error(ex.getMessage(), ex);
-                            try {
-                                output.write(ex.getMessage().getBytes());
-                            } catch (IOException exc) {
-                            }
+                            output.write(ex.getMessage().getBytes());
+                        } finally {
+                            output.close();
                         }
                     }
                 });
