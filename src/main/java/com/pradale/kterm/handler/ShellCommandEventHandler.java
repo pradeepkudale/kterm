@@ -14,7 +14,6 @@ import com.pradale.kterm.domain.auth.NoAuthentication;
 import com.pradale.kterm.domain.type.ShellCommand;
 import com.pradale.kterm.events.AlertEvent;
 import com.pradale.kterm.events.NotificationEvent;
-import com.pradale.kterm.service.SSHClientService;
 import com.pradale.kterm.service.ShellCommandService;
 import com.pradale.kterm.service.ssh.SSHClientProcess;
 import com.pradale.kterm.utils.ApplicationUtils;
@@ -60,9 +59,6 @@ public class ShellCommandEventHandler extends AbstractEventHandler {
 
     @Autowired
     private Map<AuthTypes, Authenticator> hostAuthenticators;
-
-    @Autowired
-    private SSHClientService sshClientService;
 
     @Autowired
     private ShellCommandService shellCommandService;

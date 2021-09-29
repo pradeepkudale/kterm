@@ -13,7 +13,6 @@ import com.pradale.kterm.events.LoadTreeViewShellCommand;
 import com.pradale.kterm.events.NotificationEvent;
 import com.pradale.kterm.handler.ShellCommandEventHandler;
 import com.pradale.kterm.service.InitializeService;
-import com.pradale.kterm.service.SSHClientService;
 import com.pradale.kterm.utils.ApplicationUtils;
 import com.pradale.kterm.utils.ComponentUtils;
 import javafx.application.Platform;
@@ -46,9 +45,6 @@ public class KTermController {
 
     @Autowired
     private InitializeService initializeService;
-
-    @Autowired
-    private SSHClientService sshClientService;
 
     @Autowired
     private EventBus eventBus;
